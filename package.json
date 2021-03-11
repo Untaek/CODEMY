@@ -8,12 +8,17 @@
     "start": "next start"
   },
   "dependencies": {
+    "@types/codemirror": "0.0.108",
+    "codemirror": "^5.59.4",
+    "codemirror-theme-github": "^1.0.0",
+    "marked": "^2.0.1",
     "next": "10.0.8",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
+    "@types/marked": "^2.0.0",
     "@types/node": "^14.14.31",
     "@types/react": "^17.0.2",
     "@types/styled-components": "^5.1.7",

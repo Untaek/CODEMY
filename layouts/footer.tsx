@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Footer = () => {
-  return <__Footer>Copyright by Me.</__Footer>
+  return <__Footer>Copyright by 하하맨.</__Footer>
 }
 
 const __Footer = styled.div`

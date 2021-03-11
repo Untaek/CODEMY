@@ -9,6 +9,8 @@ const __Content = styled.main`
   display: flex;
   flex-direction: column;
   flex: 1;
+  align-items: center;
+  padding: 2rem 0;
 `
 
 export default Content
