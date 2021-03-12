@@ -17,6 +17,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "useDefineForClassFields": true,
     "baseUrl": ".",
     "paths": {
       "@/layouts/*": [
@@ -27,6 +28,15 @@
       ],
       "@/styles/*": [
         "styles/*"
+      ],
+      "@/utils/*": [
+        "utils/*"
+      ],
+      "@/stores/*": [
+        "stores/*"
+      ],
+      "@/types/*": [
+        "types/*"
       ]
     },
   },

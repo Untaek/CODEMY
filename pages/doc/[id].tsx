@@ -1,36 +1,50 @@
-import Content from '@/layouts/content'
 import React from 'react'
 import styled from 'styled-components'
+import Editor, { useMonaco } from '@monaco-editor/react'
+import { observer } from 'mobx-react-lite'
+
+import Content from '@/layouts/content'
 import Icon from '@/components/Icon'
+import Finder from '@/components/Finder'
+import { useStores } from '@/stores/index'
 
 const data = {
   title: '리사이클러뷰에서 요소 제거하기',
 }
 
-const Document = () => {
-  const editorArea = React.useRef<HTMLDivElement>()
+const Document = observer(() => {
+  const { docStore } = useStores()
+  const monaco = useMonaco()
 
   React.useEffect(() => {
-    ;(async () => {
-      const CodeMirror = await import('codemirror')
-      await import('codemirror/mode/javascript/javascript')
-      editorArea.current.innerHTML = null
-      CodeMirror.default(editorArea.current, {
-        tabSize: 2,
-        theme: 'github',
-        mode: 'javascript',
-        value: `function myScript() {\n  return 100;\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n`,
-        lineNumbers: true,
-      })
-    })()
-  }, [])
+    if (monaco) {
+      monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true)
+      monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
+    }
+  }, [monaco])
 
   return (
     <Content>
       <Title>{data.title}</Title>
       <Wrapper>
         <Finder />
-        <EditorContainer ref={editorArea}></EditorContainer>
+        <EditorContainer>
+          <Editor
+            theme="vs"
+            height="30rem"
+            language={docStore.currentFile?.language || ''}
+            value={docStore.currentFile?.value || ''}
+            options={{
+              minimap: { enabled: false },
+              padding: { top: 8, bottom: 8 },
+              glyphMargin: false,
+              tabSize: 2,
+              fontSize: 14,
+              scrollBeyondLastLine: false,
+              lineDecorationsWidth: 4,
+            }}
+          />
+        </EditorContainer>
         <Demo />
       </Wrapper>
       <Wrapper style={{ flexDirection: 'column', alignItems: 'center', maxWidth: '55rem' }}>
@@ -57,13 +71,14 @@ const Document = () => {
             일부만을 발췌하였습니다.
           </p>
         </Article>
-        <div style={{ alignSelf: 'stretch' }}>
-          <input type="text" style={{ width: '100%' }} />
-        </div>
+        <CommentsWrapper style={{ alignSelf: 'stretch' }}>
+          <CommentsHeader>등록된 댓글 0</CommentsHeader>
+          <CommentsTextarea placeholder="댓글을 입력해보세요" />
+        </CommentsWrapper>
       </Wrapper>
     </Content>
   )
-}
+})
 
 const Title = styled.h1`
   font-size: 2rem;
@@ -74,20 +89,12 @@ const Wrapper = styled.div`
   justify-content: center;
   max-width: 80rem;
   width: 100%;
-  margin-bottom: 2rem;
-`
-
-const Finder = styled.div`
-  width: 15rem;
-  border: 1px solid #d6d7d8;
+  padding: 2rem 0;
 `
 
 const EditorContainer = styled.div`
-  cursor: text;
   flex: 1;
   border: 1px solid #d6d7d8;
-  overflow: hidden;
-  padding: 0.5rem;
 `
 
 const Demo = styled.div`
@@ -96,7 +103,31 @@ const Demo = styled.div`
 `
 
 const Article = styled.article`
-  margin-bottom: 1.5rem;
+  margin-bottom: 3rem;
+`
+
+const CommentsWrapper = styled.div``
+
+const CommentsHeader = styled.div`
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: #345;
+  font-size: 1.1rem;
+`
+
+const CommentsTextarea = styled.textarea`
+  resize: none;
+  width: 100%;
+  font-size: 16px;
+  padding: 1rem;
+  border: 1px solid #e1e2e3;
+  border-radius: 4px;
+  outline: none;
+  min-height: 90px;
+
+  &::placeholder {
+    color: #ccc;
+  }
 `
 
 export default Document
