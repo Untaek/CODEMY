@@ -30,7 +30,7 @@ const Document = observer(() => {
         <Finder />
         <EditorContainer>
           <Editor
-            theme="vs"
+            theme="vs-dark"
             height="30rem"
             language={docStore.currentFile?.language || ''}
             value={docStore.currentFile?.value || ''}
@@ -44,10 +44,20 @@ const Document = observer(() => {
               lineDecorationsWidth: 4,
             }}
           />
+          <Run className="No-Select">
+            <img src="/play-solid.svg" alt="play" />
+            실행
+          </Run>
         </EditorContainer>
-        <Demo />
+        <Demo>
+          <iframe
+            src="http://localhost:5000/dist/Fly@recyclerview1/index.html"
+            frameBorder="0"
+            title="demo_view"
+          ></iframe>
+        </Demo>
       </Wrapper>
-      <Wrapper style={{ flexDirection: 'column', alignItems: 'center', maxWidth: '55rem' }}>
+      <Wrapper style={{ flexDirection: 'column', alignItems: 'center', maxWidth: '50rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', marginBottom: '1.5rem' }}>
           <Icon src="/profile.jpg" width="3rem" height="3rem" round />
           <div style={{ marginLeft: '0.75rem', fontSize: '1.25rem' }}>비행청소년</div>
@@ -93,13 +103,41 @@ const Wrapper = styled.div`
 `
 
 const EditorContainer = styled.div`
+  position: relative;
   flex: 1;
-  border: 1px solid #d6d7d8;
+  min-width: 50rem;
+`
+
+const Run = styled.div`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  right: 2rem;
+  bottom: 1.2rem;
+  background-color: #fff;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ccc;
+  }
+
+  img {
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-right: 0.2rem;
+  }
 `
 
 const Demo = styled.div`
-  width: 15rem;
+  width: 20rem;
   border: 1px solid #d6d7d8;
+
+  iframe {
+    height: 100%;
+  }
 `
 
 const Article = styled.article`

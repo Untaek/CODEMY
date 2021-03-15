@@ -9,9 +9,6 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.0.11",
-    "@types/codemirror": "0.0.108",
-    "codemirror": "^5.59.4",
-    "codemirror-theme-github": "^1.0.0",
     "marked": "^2.0.1",
     "mobx": "^6.1.8",
     "mobx-react-lite": "^3.2.0",
