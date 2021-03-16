@@ -20,24 +20,7 @@
     "useDefineForClassFields": true,
     "baseUrl": ".",
     "paths": {
-      "@/layouts/*": [
-        "layouts/*"
-      ],
-      "@/components/*": [
-        "components/*"
-      ],
-      "@/styles/*": [
-        "styles/*"
-      ],
-      "@/utils/*": [
-        "utils/*"
-      ],
-      "@/stores/*": [
-        "stores/*"
-      ],
-      "@/types/*": [
-        "types/*"
-      ]
+      "@/*": ["*"]
     },
   },
   "include": [

@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { File } from '@/types/index'
 import { observer } from 'mobx-react-lite'
-import { useStores } from '../stores'
+import { File } from '@/types'
+import { useStores } from '@/stores'
 
 const Finder = observer(() => {
   const { docStore } = useStores()
@@ -14,55 +14,57 @@ const Finder = observer(() => {
     docStore.setCurrentFile(file)
   }
 
+  const renderTreeItems = (files: File[]) => {
+    return files.map((file) => {
+      if (file.type === 'Directory') {
+        return (
+          <React.Fragment key={file.type + file.name}>
+            <Directory className="No-Select" onClick={() => onClickDirectory(file)}>
+              <img src={file.open ? '/folder-open-regular.svg' : '/folder-regular.svg'} alt="folder" />
+              <span>{file.name}</span>
+            </Directory>
+
+            {/* Recursive Sub tree */}
+            {file.children && file.children.length ? (
+              <SubTree open={file.open} size={file.children.length}>
+                {renderTreeItems(file.children)}
+              </SubTree>
+            ) : undefined}
+          </React.Fragment>
+        )
+      }
+
+      if (file.type === 'File') {
+        return (
+          <FileRow
+            active={file === docStore.currentFile}
+            className="No-Select"
+            onClick={() => onClickFile(file)}
+            key={file.type + file.name}
+          >
+            <svg className="icon" aria-hidden="true">
+              <use xlinkHref={`/ffont.symbol.svg#ffont-${file.language}`}></use>
+            </svg>
+            <span>{file.name}</span>
+          </FileRow>
+        )
+      }
+    })
+  }
+
   return (
     <__Finder>
+      <Header>Fly@recyclerview1</Header>
       <section>
-        <Header>Fly@recyclerview1</Header>
-        <Tree>
-          {docStore.currentDoc.root.map((file) => {
-            if (file.type === 'Directory') {
-              return (
-                <React.Fragment key={file.type + file.name}>
-                  <Directory className="No-Select" onClick={() => onClickDirectory(file)}>
-                    <img src={file.open ? '/folder-open-regular.svg' : '/folder-regular.svg'} alt="folder" />
-                    <span>{file.name}</span>
-                  </Directory>
-                  {file.open && file.children ? (
-                    <SubTree>
-                      {file.children.map((child) => {
-                        return (
-                          <React.Fragment key={file.name + child.type + child.name}>
-                            <FileRow className="No-Select" onClick={() => onClickFile(child)}>
-                              <svg className="icon" aria-hidden="true">
-                                <use xlinkHref={`/ffont.symbol.svg#ffont-${child.language}`}></use>
-                              </svg>
-                              <span>{child.name}</span>
-                            </FileRow>
-                          </React.Fragment>
-                        )
-                      })}
-                    </SubTree>
-                  ) : undefined}
-                </React.Fragment>
-              )
-            } else if (file.type === 'File') {
-              return (
-                <FileRow className="No-Select" onClick={() => onClickFile(file)} key={file.type + file.name}>
-                  <svg className="icon" aria-hidden="true">
-                    <use xlinkHref={`/ffont.symbol.svg#ffont-${file.language}`}></use>
-                  </svg>
-                  <span>{file.name}</span>
-                </FileRow>
-              )
-            }
-          })}
-        </Tree>
+        <Tree>{renderTreeItems(docStore.currentDoc.root)}</Tree>
       </section>
     </__Finder>
   )
 })
 
 const __Finder = styled.div`
+  display: flex;
+  flex-direction: column;
   min-width: 13rem;
   width: 13rem;
   max-width: 13rem;
@@ -70,6 +72,12 @@ const __Finder = styled.div`
   text-overflow: ellipsis;
   border-right: none;
   font-family: Menlo, Monaco, 'Courier New', monospace;
+
+  section {
+    flex: 1;
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
 `
 
 const Row = styled.div`
@@ -102,8 +110,8 @@ const Row = styled.div`
 `
 
 const Header = styled(Row)`
-  height: 36px;
-  max-height: 36px;
+  height: 2.4rem;
+  max-height: 2.4rem;
   font-weight: 600;
   background-color: #1e384d;
   color: #eeeeee;
@@ -114,17 +122,23 @@ const Header = styled(Row)`
   }
 `
 
-const Tree = styled.div`
-  border-left: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-`
+const Tree = styled.div``
 
 const Directory = styled(Row)``
 
-const FileRow = styled(Row)``
+const FileRow = styled(Row)<{ active: boolean }>`
+  ${(props) => (props.active ? 'background-color: #eeeeee;' : '')}
+  &:hover {
+    ${(props) => (props.active ? 'background-color: #eeeeee;' : '')}
+  }
+`
 
-const SubTree = styled.div`
-  div {
+const SubTree = styled.div<{ open: boolean; size: number }>`
+  overflow: hidden;
+  transition: max-height 0.3s;
+  max-height: ${(props) => (props.open ? `${props.size * 2}rem` : '0')};
+
+  > div {
     padding-left: 1.25rem;
   }
 `

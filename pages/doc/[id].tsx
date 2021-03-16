@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite'
 import Content from '@/layouts/content'
 import Icon from '@/components/Icon'
 import Finder from '@/components/Finder'
-import { useStores } from '@/stores/index'
+import { useStores } from '@/stores'
 
 const data = {
   title: '리사이클러뷰에서 요소 제거하기',

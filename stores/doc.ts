@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { File } from '@/types/index'
+import { File } from '@/types'
 
 export class Doc {
   currentDoc = {
