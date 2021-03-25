@@ -67,17 +67,18 @@ const __List = styled.div`
 
 const ListItem = styled.a`
   display: flex;
-  border: 1px solid #e4e5e6;
+  box-shadow: 0px 0px 4px rgba(96, 116, 150, 0.25);
+  border: 1px solid #ffffff;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
 
   &:not(:last-child) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   &:hover {
     background-color: #f4f5f6;
-    border: 1px solid #d2d3d4;
+    border: 1px solid #e5e6e7;
   }
 `
 

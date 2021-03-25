@@ -31,10 +31,11 @@ export class Doc {
         language: 'html',
         value: '<html>\n  <script src=./"main.js"></script>\n</html>\n',
       },
-      { name: 'main.js', type: 'File', language: 'javascript', value: `alert('ha')\n` },
+      { name: 'main.ts', type: 'File', language: 'typescript', value: `alert('ha')\n` },
     ] as File[],
   }
-  currentFile: File
+
+  currentFile: File = { name: 'main.ts', type: 'File', language: 'typescript', value: `alert('ha')\n` }
 
   setCurrentFile(file: File): void {
     this.currentFile = file

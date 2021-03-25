@@ -12,7 +12,9 @@ const Header = () => {
         <SearchBar>
           <input type="text" placeholder="검색" />
         </SearchBar>
-        <Right>로그인</Right>
+        <Right>
+          <Link href="/">로그인</Link>
+        </Right>
       </NavBar>
     </__Header>
   )
@@ -33,7 +35,7 @@ const Brand = styled.a`
   background-size: 100%;
   background-repeat: no-repeat;
   cursor: pointer;
-  margin-right: 1rem;
+  margin-right: 3rem;
 `
 
 const NavBar = styled.div`
@@ -42,7 +44,7 @@ const NavBar = styled.div`
   display: flex;
   align-items: center;
   font-size: 1.25em;
-  font-weight: 700;
+  font-weight: 400;
 `
 
 const Right = styled.div`
@@ -50,13 +52,9 @@ const Right = styled.div`
 `
 
 const SearchBar = styled.div`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-
   input {
     height: 2.5rem;
-    width: 20rem;
+    width: 25rem;
     padding: 0 1.25rem;
     font-size: 1.1rem;
     border: 1px solid #c2c3c4;

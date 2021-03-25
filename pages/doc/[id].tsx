@@ -1,25 +1,108 @@
 import React from 'react'
 import styled from 'styled-components'
-import Editor, { useMonaco } from '@monaco-editor/react'
+import Editor, { Monaco, useMonaco } from '@monaco-editor/react'
 import { observer } from 'mobx-react-lite'
 
 import Content from '@/layouts/content'
 import Icon from '@/components/Icon'
 import Finder from '@/components/Finder'
 import { useStores } from '@/stores'
+import { editor } from 'monaco-editor'
 
 const data = {
   title: '리사이클러뷰에서 요소 제거하기',
 }
 
+const languages: { [key: string]: { name: string } } = {
+  typescript: {
+    name: 'TypeScript',
+  },
+  javascript: {
+    name: 'JavaScript',
+  },
+  html: {
+    name: 'HTML',
+  },
+  markdown: {
+    name: 'Markdown',
+  },
+}
+
+const createDependencyProposals = (monaco: Monaco, range: any) => {
+  return [
+    {
+      label: 'lodash',
+      kind: monaco.languages.CompletionItemKind.Module,
+      insertText: 'lodash',
+      range: range,
+    },
+    {
+      label: 'util',
+      kind: monaco.languages.CompletionItemKind.Module,
+      insertText: 'util',
+      range: range,
+    },
+  ]
+}
+
 const Document = observer(() => {
   const { docStore } = useStores()
   const monaco = useMonaco()
+  const monacoRef = React.useRef<editor.IStandaloneCodeEditor>()
 
   React.useEffect(() => {
     if (monaco) {
-      monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true)
-      monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
+      monaco?.languages.typescript.typescriptDefaults.setEagerModelSync(true)
+
+      monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: false,
+        noSyntaxValidation: false,
+      })
+
+      monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+        target: monaco.languages.typescript.ScriptTarget.ESNext,
+        moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+        baseUrl: '.',
+        paths: { '*': ['/node_modules/@types/*'] },
+      })
+
+      const libSource = ['export class Util {', 'public static test(): string {}', '}'].join('\n')
+      const libUri = '/node_modules/@types/util/index.d.ts'
+
+      const lib = monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, libUri)
+
+      monaco.languages.registerCompletionItemProvider('typescript', {
+        triggerCharacters: ['"', "'"],
+        provideCompletionItems: (model, position) => {
+          const textUntilPosition = model.getValueInRange({
+            startLineNumber: 1,
+            startColumn: 1,
+            endLineNumber: position.lineNumber,
+            endColumn: position.column,
+          })
+
+          const match = textUntilPosition.match(/import {\w*} from '\w*'?/)
+
+          if (!match) {
+            return { suggestions: [] }
+          }
+          const word = model.getWordUntilPosition(position)
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn,
+          }
+          return {
+            suggestions: createDependencyProposals(monaco, range),
+          }
+        },
+      })
+      // monaco.editor.createModel(libSource, 'typescript', monaco.Uri.parse(libUri))
+
+      return () => {
+        lib.dispose()
+      }
     }
   }, [monaco])
 
@@ -32,8 +115,10 @@ const Document = observer(() => {
           <Editor
             theme="vs-dark"
             height="30rem"
-            language={docStore.currentFile?.language || ''}
-            value={docStore.currentFile?.value || ''}
+            onMount={(e) => (monacoRef.current = e)}
+            language={docStore.currentFile.language}
+            value={docStore.currentFile.value}
+            path={docStore.currentFile.name}
             options={{
               minimap: { enabled: false },
               padding: { top: 8, bottom: 8 },
@@ -48,6 +133,9 @@ const Document = observer(() => {
             <img src="/play-solid.svg" alt="play" />
             실행
           </Run>
+          <StatusBar>
+            <StatusBarItems>{languages[docStore.currentFile.language].name}</StatusBarItems>
+          </StatusBar>
         </EditorContainer>
         <Demo>
           <iframe
@@ -113,8 +201,8 @@ const Run = styled.div`
   display: flex;
   align-items: center;
   z-index: 2;
-  right: 2rem;
-  bottom: 1.2rem;
+  right: 1.7rem;
+  bottom: 2.3rem;
   background-color: #fff;
   padding: 0.3rem 0.5rem;
   border-radius: 0.25rem;
@@ -129,6 +217,21 @@ const Run = styled.div`
     height: 0.9rem;
     margin-right: 0.2rem;
   }
+`
+
+const StatusBar = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: #0392e5;
+  color: #ffffff;
+  height: 1.5rem;
+`
+
+const StatusBarItems = styled.div`
+  font-size: 0.7rem;
+  margin-left: auto;
+  padding: 0 0.5rem;
+  line-height: 1;
 `
 
 const Demo = styled.div`
@@ -165,6 +268,10 @@ const CommentsTextarea = styled.textarea`
 
   &::placeholder {
     color: #ccc;
+  }
+
+  &:focus {
+    border: 1px solid #c1c5c9;
   }
 `
 
