@@ -72,11 +72,10 @@ const __Finder = styled.div`
   text-overflow: ellipsis;
   border-right: none;
   font-family: Menlo, Monaco, 'Courier New', monospace;
+  background-color: #dae6ee;
 
   section {
     flex: 1;
-    border-left: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
   }
 `
 
@@ -91,7 +90,7 @@ const Row = styled.div`
   white-space: nowrap;
 
   &:hover {
-    background-color: #f4f5f6;
+    background-color: #ced8e3;
   }
 
   svg,
@@ -127,9 +126,9 @@ const Tree = styled.div``
 const Directory = styled(Row)``
 
 const FileRow = styled(Row)<{ active: boolean }>`
-  ${(props) => (props.active ? 'background-color: #eeeeee;' : '')}
+  ${(props) => (props.active ? 'background-color: #ced8e3;' : '')}
   &:hover {
-    ${(props) => (props.active ? 'background-color: #eeeeee;' : '')}
+    ${(props) => (props.active ? 'background-color: #ced8e3;' : '')}
   }
 `
 

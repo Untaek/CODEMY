@@ -1,13 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import Editor, { Monaco, useMonaco } from '@monaco-editor/react'
+import { editor, IRange } from 'monaco-editor'
 import { observer } from 'mobx-react-lite'
+import Editor, { Monaco, useMonaco } from '@monaco-editor/react'
 
 import Content from '@/layouts/content'
 import Icon from '@/components/Icon'
 import Finder from '@/components/Finder'
 import { useStores } from '@/stores'
-import { editor } from 'monaco-editor'
 
 const data = {
   title: '리사이클러뷰에서 요소 제거하기',
@@ -28,7 +28,7 @@ const languages: { [key: string]: { name: string } } = {
   },
 }
 
-const createDependencyProposals = (monaco: Monaco, range: any) => {
+const createDependencyProposals = (monaco: Monaco, range: IRange) => {
   return [
     {
       label: 'lodash',
@@ -49,6 +49,29 @@ const Document = observer(() => {
   const { docStore } = useStores()
   const monaco = useMonaco()
   const monacoRef = React.useRef<editor.IStandaloneCodeEditor>()
+
+  React.useEffect(() => {
+    import('xterm').then((mod) => {
+      const term = new mod.Terminal({
+        rows: 15,
+      })
+      term.onKey((event) => {
+        if (event.domEvent.key === 'Backspace') {
+          term.write('\b \b')
+        } else if (event.domEvent.key === 'Enter') {
+          term.writeln('')
+          term.write('> ')
+        } else {
+          term.write(event.key)
+        }
+      })
+      const wrapper = document.getElementById('terminal')
+      wrapper.innerHTML = ''
+      term.open(wrapper)
+      term.writeln('Sandbox Runner: nodejs v15.\n')
+      term.write('> ')
+    })
+  }, [])
 
   React.useEffect(() => {
     if (monaco) {
@@ -81,18 +104,19 @@ const Document = observer(() => {
             endColumn: position.column,
           })
 
-          const match = textUntilPosition.match(/import {\w*} from '\w*'?/)
+          const match = textUntilPosition.match(/import {?\s?\w*\s?}? from ('|")(\w*)/)
 
           if (!match) {
             return { suggestions: [] }
           }
           const word = model.getWordUntilPosition(position)
-          const range = {
+          const range: IRange = {
             startLineNumber: position.lineNumber,
             endLineNumber: position.lineNumber,
             startColumn: word.startColumn,
             endColumn: word.endColumn,
           }
+
           return {
             suggestions: createDependencyProposals(monaco, range),
           }
@@ -120,6 +144,7 @@ const Document = observer(() => {
             value={docStore.currentFile.value}
             path={docStore.currentFile.name}
             options={{
+              readOnly: true,
               minimap: { enabled: false },
               padding: { top: 8, bottom: 8 },
               glyphMargin: false,
@@ -134,22 +159,21 @@ const Document = observer(() => {
             실행
           </Run>
           <StatusBar>
+            <StatusBarItems>Read-Only</StatusBarItems>
             <StatusBarItems>{languages[docStore.currentFile.language].name}</StatusBarItems>
           </StatusBar>
         </EditorContainer>
-        <Demo>
-          <iframe
+      </Wrapper>
+      <Wrapper>
+        <Demo id="terminal">
+          {/* <iframe
             src="http://localhost:5000/dist/Fly@recyclerview1/index.html"
             frameBorder="0"
             title="demo_view"
-          ></iframe>
+          ></iframe> */}
         </Demo>
       </Wrapper>
-      <Wrapper style={{ flexDirection: 'column', alignItems: 'center', maxWidth: '50rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', marginBottom: '1.5rem' }}>
-          <Icon src="/profile.jpg" width="3rem" height="3rem" round />
-          <div style={{ marginLeft: '0.75rem', fontSize: '1.25rem' }}>비행청소년</div>
-        </div>
+      <Wrapper style={{ flexDirection: 'column', marginTop: '2rem' }}>
         <Article className="markdown-body">
           <h2>RecyclerView</h2>
           <p>
@@ -165,10 +189,14 @@ const Document = observer(() => {
           <p>상황에 따라 저는 두가지 경우를 모두 사용합니다. </p>
           <p>이번 포스팅에서는 첫번째 방법으로 처리하는 방법에 대해 알아보겠습니다. </p>
           <p>
-            먼저, 특정 항목에 대한 삭제이므로RecyclerViewAdapter에서 코드를 시작하면 됩니다. 아래는 제가 작성한 코드 중
+            먼저, 특정 항목에 대한 삭제이므로 RecyclerViewAdapter에서 코드를 시작하면 됩니다. 아래는 제가 작성한 코드 중
             일부만을 발췌하였습니다.
           </p>
         </Article>
+        <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', marginBottom: '1.5rem' }}>
+          <Icon src="/profile.jpg" width="2.5rem" height="2.5rem" round />
+          <div style={{ marginLeft: '0.75rem', fontSize: '1.25rem' }}>비행청소년</div>
+        </div>
         <CommentsWrapper style={{ alignSelf: 'stretch' }}>
           <CommentsHeader>등록된 댓글 0</CommentsHeader>
           <CommentsTextarea placeholder="댓글을 입력해보세요" />
@@ -180,20 +208,22 @@ const Document = observer(() => {
 
 const Title = styled.h1`
   font-size: 2rem;
+  margin-bottom: 2rem;
 `
 
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
-  max-width: 80rem;
+  max-width: 70rem;
   width: 100%;
-  padding: 2rem 0;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
 `
 
 const EditorContainer = styled.div`
   position: relative;
   flex: 1;
-  min-width: 50rem;
 `
 
 const Run = styled.div`
@@ -201,7 +231,7 @@ const Run = styled.div`
   display: flex;
   align-items: center;
   z-index: 2;
-  right: 1.7rem;
+  right: 1.5rem;
   bottom: 2.3rem;
   background-color: #fff;
   padding: 0.3rem 0.5rem;
@@ -222,24 +252,26 @@ const Run = styled.div`
 const StatusBar = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background-color: #0392e5;
   color: #ffffff;
-  height: 1.5rem;
+  height: 1.6rem;
 `
 
 const StatusBarItems = styled.div`
   font-size: 0.7rem;
-  margin-left: auto;
   padding: 0 0.5rem;
   line-height: 1;
 `
 
 const Demo = styled.div`
-  width: 20rem;
-  border: 1px solid #d6d7d8;
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #000000;
 
   iframe {
     height: 100%;
+    width: 100%;
   }
 `
 

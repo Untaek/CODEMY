@@ -3,6 +3,7 @@ import { AppProps } from 'next/dist/next-server/lib/router/router'
 
 import '@/styles/globals.css'
 import '@/styles/markdown.css'
+import 'xterm/css/xterm.css'
 
 import Header from '@/layouts/header'
 import Footer from '@/layouts/footer'
