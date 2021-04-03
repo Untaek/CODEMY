@@ -9,14 +9,22 @@ import Header from '@/layouts/header'
 import Footer from '@/layouts/footer'
 import { isSSR } from '@/utils'
 import { createStores, StoresContext, TStore } from '@/stores'
+import { enableStaticRendering } from 'mobx-react-lite'
+
+enableStaticRendering(typeof window === 'undefined')
 
 let stores: TStore
 
-if (isSSR || !stores) {
-  stores = createStores()
-}
-
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  if (isSSR) {
+    /**
+     * Hydrate data
+     */
+    stores = createStores(pageProps)
+  } else {
+    stores = createStores()
+  }
+
   return (
     <>
       <StoresContext.Provider value={stores}>

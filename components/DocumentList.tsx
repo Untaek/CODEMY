@@ -1,7 +1,9 @@
 import React from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
+
 import Icon from './Icon'
+import { Document } from '@/types'
 
 const data = [
   {
@@ -31,34 +33,42 @@ const data = [
   },
 ]
 
-const List = () => {
+type DocumentListProps = {
+  documents: Document[]
+}
+
+const DocumentList = (props: DocumentListProps) => {
+  if (!props.documents) {
+    return <div></div>
+  }
+
   return (
-    <__List>
-      {data.map((e) => {
+    <__DocumentList>
+      {props.documents.map((e) => {
         return (
-          <Link key={e.id} href={`/doc/${e.id}`} passHref>
+          <Link key={e.id} href={`/d/${e.id}`} passHref>
             <ListItem>
               <div style={{ marginRight: '1rem', flexDirection: 'column', alignItems: 'center' }}>
                 <Icon src="/up.png" width="1.5rem" height="1.5rem" />
-                {e.like}
+                {/* {e.like} */}
               </div>
               <div style={{ flexDirection: 'column' }}>
                 <div style={{ marginBottom: '0.25rem' }}>{e.title}</div>
                 <div style={{ display: 'flex' }}>
-                  {e.assoc.map((assocItem) => {
+                  {/* {e.assoc.map((assocItem) => {
                     return <Icon key={assocItem.name} src={assocItem.imageURL} width="1.75rem" height="1.75rem" />
-                  })}
+                  })} */}
                 </div>
               </div>
             </ListItem>
           </Link>
         )
       })}
-    </__List>
+    </__DocumentList>
   )
 }
 
-const __List = styled.div`
+const __DocumentList = styled.div`
   flex: 1;
   flex-direction: column;
   padding: 0 2rem;
@@ -82,4 +92,4 @@ const ListItem = styled.a`
   }
 `
 
-export default List
+export default DocumentList

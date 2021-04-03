@@ -3,11 +3,25 @@ import styled from 'styled-components'
 import { editor, IRange } from 'monaco-editor'
 import { observer } from 'mobx-react-lite'
 import Editor, { Monaco, useMonaco } from '@monaco-editor/react'
+import { GetServerSideProps } from 'next'
 
 import Content from '@/layouts/content'
 import Icon from '@/components/Icon'
 import Finder from '@/components/Finder'
 import { useStores } from '@/stores'
+import { API } from '@/utils'
+import { Document } from '@/types'
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.params
+  const { data: document } = await API.get(`/${id}`)
+
+  return {
+    props: {
+      document,
+    },
+  }
+}
 
 const data = {
   title: '리사이클러뷰에서 요소 제거하기',
@@ -45,10 +59,18 @@ const createDependencyProposals = (monaco: Monaco, range: IRange) => {
   ]
 }
 
-const Document = observer(() => {
+type DocumentPageProps = {
+  document: Document
+}
+
+const DocumentPage = observer((props: DocumentPageProps) => {
   const { docStore } = useStores()
   const monaco = useMonaco()
   const monacoRef = React.useRef<editor.IStandaloneCodeEditor>()
+
+  if (!docStore.currentDocument) {
+    docStore.setCurrentDocument(props.document)
+  }
 
   React.useEffect(() => {
     import('xterm').then((mod) => {
@@ -259,7 +281,7 @@ const StatusBar = styled.div`
 `
 
 const StatusBarItems = styled.div`
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   padding: 0 0.5rem;
   line-height: 1;
 `
@@ -307,4 +329,4 @@ const CommentsTextarea = styled.textarea`
   }
 `
 
-export default Document
+export default DocumentPage

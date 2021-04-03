@@ -56,7 +56,7 @@ const Finder = observer(() => {
     <__Finder>
       <Header>Fly@recyclerview1</Header>
       <section>
-        <Tree>{renderTreeItems(docStore.currentDoc.root)}</Tree>
+        <Tree>{renderTreeItems(docStore.currentDocument.root.files)}</Tree>
       </section>
     </__Finder>
   )
@@ -126,9 +126,9 @@ const Tree = styled.div``
 const Directory = styled(Row)``
 
 const FileRow = styled(Row)<{ active: boolean }>`
-  ${(props) => (props.active ? 'background-color: #ced8e3;' : '')}
+  ${(props) => (props.active ? 'background-color: #c4d1df;' : '')}
   &:hover {
-    ${(props) => (props.active ? 'background-color: #ced8e3;' : '')}
+    ${(props) => (props.active ? 'background-color: #c4d1df;' : '')}
   }
 `
 
